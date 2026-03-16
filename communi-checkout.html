@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — Communi Lifetime Access</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --purple:#6002EE;--purple-dark:#4A00C0;--purple-light:#EFE6FD;
+  --green:#1ABC9C;--orange:#FA8100;--red:#EF4444;
+  --dark:#0D0D12;--dark2:#1A1A1A;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:#F5F3FF;color:#1a1a2e;line-height:1.6;min-height:100vh}
+
+.checkout-header{background:#fff;border-bottom:1px solid #E5E7EB;padding:16px 20px;display:flex;align-items:center;justify-content:center;gap:12px}
+.checkout-header .logo{font-size:24px;font-weight:900;color:var(--purple)}
+.checkout-header .secure{display:flex;align-items:center;gap:6px;font-size:13px;color:#6B7280;font-weight:500}
+
+.checkout-wrapper{max-width:1040px;margin:0 auto;padding:40px 20px;display:grid;grid-template-columns:1fr 400px;gap:40px;align-items:start}
+@media(max-width:768px){.checkout-wrapper{grid-template-columns:1fr;gap:24px}}
+
+.checkout-form{background:#fff;border-radius:16px;padding:36px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04)}
+.form-title{font-size:22px;font-weight:800;margin-bottom:24px;color:var(--dark)}
+.form-group{margin-bottom:20px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;letter-spacing:.3px}
+.form-group input,.form-group select{width:100%;padding:14px 16px;border:1.5px solid #D1D5DB;border-radius:10px;font-size:15px;font-family:inherit;color:#111;background:#FAFAFA;transition:border-color .2s,box-shadow .2s}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(96,2,238,.1);background:#fff}
+.form-group input::placeholder{color:#9CA3AF}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}}
+.form-divider{height:1px;background:#E5E7EB;margin:28px 0}
+
+.bump-offer{border:2px dashed var(--orange);border-radius:14px;padding:24px;margin:28px 0;background:linear-gradient(135deg,#FFF7ED,#FFFBF5);position:relative;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.bump-offer:hover{border-color:#E07000;box-shadow:0 4px 20px rgba(250,129,0,.12)}
+.bump-offer.active{border-style:solid;border-color:var(--orange);background:linear-gradient(135deg,#FFF3E0,#FFF8F0);box-shadow:0 4px 24px rgba(250,129,0,.15)}
+.bump-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.bump-checkbox{width:22px;height:22px;border-radius:6px;border:2px solid #D1D5DB;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.bump-offer.active .bump-checkbox{background:var(--orange);border-color:var(--orange)}
+.bump-checkbox svg{width:14px;height:14px;stroke:#fff;stroke-width:3;fill:none;opacity:0;transition:opacity .2s}
+.bump-offer.active .bump-checkbox svg{opacity:1}
+.bump-tag{display:inline-flex;align-items:center;gap:4px;background:var(--orange);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
+.bump-title{font-size:17px;font-weight:800;color:#1a1a2e}
+.bump-desc{font-size:14px;color:#4B5563;line-height:1.6;margin-bottom:12px}
+.bump-price{display:flex;align-items:baseline;gap:8px}
+.bump-price .now{font-size:28px;font-weight:900;color:var(--orange)}
+.bump-price .was{font-size:16px;color:#9CA3AF;text-decoration:line-through}
+.bump-price .save{font-size:13px;font-weight:700;color:var(--green);background:rgba(26,188,156,.1);padding:3px 10px;border-radius:6px}
+.bump-features{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.bump-features span{font-size:12px;font-weight:600;color:#6B7280;background:#F3F4F6;padding:4px 10px;border-radius:6px}
+
+.submit-btn{width:100%;padding:20px;border:none;border-radius:12px;font-size:18px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--purple) 0%,var(--purple-dark) 100%);cursor:pointer;transition:all .3s;box-shadow:0 4px 24px rgba(96,2,238,.35);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;font-family:inherit}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(96,2,238,.5)}
+.submit-btn:active{transform:translateY(0)}
+.submit-secure{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:16px;font-size:12px;color:#9CA3AF;font-weight:500}
+
+.order-summary{background:#fff;border-radius:16px;padding:32px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);position:sticky;top:20px}
+.summary-title{font-size:18px;font-weight:800;color:var(--dark);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.summary-item{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #F3F4F6}
+.summary-item:last-of-type{border-bottom:none}
+.summary-item .name{font-size:15px;font-weight:600;color:#374151}
+.summary-item .desc{font-size:12px;color:#9CA3AF;margin-top:2px}
+.summary-item .price{font-size:15px;font-weight:700;color:#111}
+.summary-item.bump-line{background:#FFF7ED;margin:0 -32px;padding:14px 32px;border-bottom:1px solid #FDE8CD}
+.summary-item.bump-line .name{color:var(--orange)}
+.summary-divider{height:2px;background:linear-gradient(90deg,var(--purple),var(--purple-light));margin:4px 0;border-radius:2px}
+.summary-total{display:flex;justify-content:space-between;align-items:center;padding:16px 0 0}
+.summary-total .label{font-size:18px;font-weight:800;color:var(--dark)}
+.summary-total .amount{font-size:28px;font-weight:900;color:var(--purple)}
+.summary-badge{display:flex;align-items:center;gap:8px;margin-top:20px;padding:12px 16px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;font-size:13px;font-weight:600;color:#166534}
+.summary-guarantee{display:flex;align-items:center;gap:8px;margin-top:10px;padding:12px 16px;background:var(--purple-light);border-radius:10px;font-size:13px;font-weight:600;color:var(--purple-dark)}
+.summary-includes{margin-top:20px;padding-top:16px;border-top:1px solid #F3F4F6}
+.summary-includes h4{font-size:13px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.summary-includes li{list-style:none;padding:4px 0;font-size:13px;color:#374151;display:flex;align-items:center;gap:6px}
+.summary-includes li .ck{color:var(--green);font-weight:700;font-size:14px}
+
+.trust-strip{text-align:center;padding:32px 20px;color:#9CA3AF;font-size:13px}
+.trust-logos{display:flex;justify-content:center;gap:24px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.trust-logos span{font-size:12px;font-weight:600;color:#B0B0B0;background:#F3F4F6;padding:6px 14px;border-radius:8px}
+
+/* Payment method tabs */
+.payment-methods{display:flex;gap:0;margin-bottom:20px;border:1.5px solid #E5E7EB;border-radius:12px;overflow:hidden;background:#F9FAFB}
+.payment-method{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 12px;cursor:pointer;font-size:14px;font-weight:600;color:#6B7280;background:transparent;border:none;border-right:1px solid #E5E7EB;transition:all .2s;font-family:inherit;position:relative}
+.payment-method:last-child{border-right:none}
+.payment-method .pm-icon{font-size:18px;line-height:1}
+.payment-method.active{background:#fff;color:var(--purple);box-shadow:inset 0 -2px 0 var(--purple)}
+.payment-method:not(.active):hover{background:#F3F4F6;color:#374151}
+.payment-fields{display:none}
+.payment-fields.active{display:block}
+.payment-alt-msg{text-align:center;padding:32px 16px;color:#6B7280;font-size:14px;line-height:1.7}
+.payment-alt-msg .alt-icon{font-size:36px;display:block;margin-bottom:12px}
+.payment-alt-msg strong{color:#1a1a2e;display:block;font-size:16px;margin-bottom:4px}
+
+/* Coupon section */
+.coupon-section{margin:28px 0 0}
+.coupon-applied{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.coupon-pill{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#F0FDF4,#ECFDF5);border:1.5px solid #86EFAC;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;color:#166534;letter-spacing:.3px}
+.coupon-pill .pill-icon{font-size:14px}
+.coupon-actions{display:flex;gap:12px}
+.coupon-actions a{font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;transition:color .2s}
+.coupon-actions .remove-link{color:#EF4444}
+.coupon-actions .remove-link:hover{color:#DC2626}
+.coupon-actions .change-link{color:var(--purple)}
+.coupon-actions .change-link:hover{color:var(--purple-dark)}
+.coupon-expanded{display:flex;gap:10px;align-items:start}
+.coupon-expanded input{flex:1;padding:12px 14px;border:1.5px solid #D1D5DB;border-radius:10px;font-size:14px;font-family:inherit;color:#111;background:#FAFAFA;transition:border-color .2s,box-shadow .2s;text-transform:uppercase;letter-spacing:.5px}
+.coupon-expanded input:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(96,2,238,.1);background:#fff}
+.coupon-expanded input::placeholder{text-transform:none;letter-spacing:0;color:#9CA3AF}
+.coupon-expanded .apply-btn{padding:12px 22px;border:none;border-radius:10px;font-size:14px;font-weight:700;color:#fff;background:var(--purple);cursor:pointer;font-family:inherit;transition:background .2s,box-shadow .2s;white-space:nowrap}
+.coupon-expanded .apply-btn:hover{background:var(--purple-dark);box-shadow:0 2px 12px rgba(96,2,238,.25)}
+.coupon-error{font-size:12px;color:var(--red);font-weight:600;margin-top:6px;display:none;align-items:center;gap:4px}
+.coupon-label{font-size:13px;font-weight:600;color:#6B7280;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+
+/* Summary discount line */
+.summary-item.discount-line .name{color:var(--green)}
+.summary-item.discount-line .price{color:var(--green)}
+.summary-item.regular-line .price{color:#9CA3AF;font-weight:500;text-decoration:line-through}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.checkout-form,.order-summary{animation:fadeUp .6s ease both}
+.order-summary{animation-delay:.15s}
+</style>
+</head>
+<body>
+
+<header class="checkout-header">
+  <span class="logo">Communi</span>
+  <span style="color:#E5E7EB">|</span>
+  <span class="secure">🔒 Secure Checkout</span>
+</header>
+
+<div class="checkout-wrapper">
+  <div class="checkout-form">
+    <h2 class="form-title">Complete Your Order</h2>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" placeholder="you@example.com" id="email" required>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" placeholder="John" id="fname" required>
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" placeholder="Doe" id="lname" required>
+      </div>
+    </div>
+
+    <div class="form-divider"></div>
+
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px">Payment Method</h3>
+    <div class="payment-methods">
+      <button class="payment-method active" data-method="stripe" onclick="switchPayment('stripe')">
+        <span class="pm-icon">💳</span> Stripe
+      </button>
+      <button class="payment-method" data-method="paypal" onclick="switchPayment('paypal')">
+        <span class="pm-icon">🅿️</span> PayPal
+      </button>
+      <button class="payment-method" data-method="usdt" onclick="switchPayment('usdt')">
+        <span class="pm-icon">₮</span> USDT
+      </button>
+    </div>
+
+    <!-- Stripe card fields -->
+    <div class="payment-fields active" id="fields-stripe">
+      <div class="form-group">
+        <label>Card Number</label>
+        <input type="text" placeholder="1234 5678 9012 3456" id="card" maxlength="19">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Expiry Date</label>
+          <input type="text" placeholder="MM / YY" id="expiry" maxlength="7">
+        </div>
+        <div class="form-group">
+          <label>CVC</label>
+          <input type="text" placeholder="123" id="cvc" maxlength="4">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Name on Card</label>
+        <input type="text" placeholder="John Doe" id="cardname">
+      </div>
+    </div>
+
+    <!-- PayPal -->
+    <div class="payment-fields" id="fields-paypal">
+      <div class="payment-alt-msg">
+        <span class="alt-icon">🅿️</span>
+        <strong>Pay with PayPal</strong>
+        You'll be redirected to PayPal to complete your payment securely.
+      </div>
+    </div>
+
+    <!-- USDT -->
+    <div class="payment-fields" id="fields-usdt">
+      <div class="payment-alt-msg">
+        <span class="alt-icon">₮</span>
+        <strong>Pay with USDT (Tether)</strong>
+        After clicking purchase, you'll receive a wallet address to send your USDT payment.
+      </div>
+    </div>
+
+    <div class="form-divider"></div>
+
+    <div class="bump-offer" id="bumpOffer" onclick="toggleBump()">
+      <div class="bump-header">
+        <div class="bump-checkbox" id="bumpCheck">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div>
+          <span class="bump-tag">🔥 Add-On</span>
+        </div>
+      </div>
+      <p class="bump-title">Yes! Add 1-on-1 Meetings &amp; Booking Calendar</p>
+      <p class="bump-desc">Book one-on-one meetings through chat. Manage your entire personal booking calendar and offer consulting through Communi — with <strong>1-on-1 calls integrated with Google, Teams &amp; Zoom.</strong></p>
+      <div class="bump-price">
+        <span class="now">+$49</span>
+        <span class="was">$197</span>
+        <span class="save">Save $148</span>
+      </div>
+      <div class="bump-features">
+        <span>📅 Booking calendar</span>
+        <span>🎥 Google Meet / Teams / Zoom</span>
+        <span>💬 Book via chat</span>
+        <span>🧑‍💼 1-on-1 consulting</span>
+      </div>
+    </div>
+
+    <!-- Coupon / Promo Code -->
+    <div class="coupon-section" id="couponSection">
+      <div class="coupon-label">🏷️ Promo Code</div>
+      <!-- Applied state -->
+      <div class="coupon-applied" id="couponApplied" style="display:none">
+        <span class="coupon-pill"><span class="pill-icon">✅</span> <span id="couponPillCode"></span></span>
+        <div class="coupon-actions">
+          <a class="remove-link" onclick="removeCoupon()">Remove</a>
+          <a class="change-link" onclick="showCouponInput()">Change code</a>
+        </div>
+      </div>
+      <!-- Expanded entry state -->
+      <div id="couponExpanded">
+        <div class="coupon-expanded">
+          <input type="text" id="couponInput" placeholder="Enter promo code" maxlength="20" onkeydown="if(event.key==='Enter')applyCoupon()">
+          <button class="apply-btn" onclick="applyCoupon()">Apply</button>
+        </div>
+        <div class="coupon-error" id="couponError">⚠️ <span id="couponErrorMsg">Invalid promo code</span></div>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
+      🔒 Complete Purchase — <span id="btnPrice">$99</span>
+    </button>
+    <div class="submit-secure">
+      <span>🔒 SSL Encrypted</span>
+      <span>💳 Secure Payment</span>
+      <span>🛡️ 30-Day Guarantee</span>
+    </div>
+  </div>
+
+  <div class="order-summary">
+    <div class="summary-title">📦 Order Summary</div>
+    <div class="summary-item regular-line" id="regularPriceLine">
+      <div>
+        <div class="name">Communi Lifetime Access</div>
+        <div class="desc">1 Community · All Features · Forever</div>
+      </div>
+      <div class="price" id="regularPriceDisplay">$499</div>
+    </div>
+    <div class="summary-item discount-line" id="discountLine" style="display:none">
+      <div>
+        <div class="name" id="discountLabel">🏷️ LIFETIME400</div>
+        <div class="desc">Promo code applied</div>
+      </div>
+      <div class="price" id="discountAmount">-$400</div>
+    </div>
+    <div class="summary-item bump-line" id="bumpSummaryLine" style="display:none">
+      <div>
+        <div class="name">🔥 1-on-1 Meetings + Calendar</div>
+        <div class="desc">Booking calendar + video call integrations</div>
+      </div>
+      <div class="price">$49</div>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-total">
+      <span class="label">Total</span>
+      <span class="amount" id="totalPrice">$99</span>
+    </div>
+    <div class="summary-badge">✅ One-time payment — no recurring fees, ever</div>
+    <div class="summary-guarantee">🛡️ 30-day money-back guarantee</div>
+    <div class="summary-includes">
+      <h4>What's included</h4>
+      <ul>
+        <li><span class="ck">✅</span> Your Own Community Group</li>
+        <li><span class="ck">✅</span> Full Course Builder + Certificates</li>
+        <li><span class="ck">✅</span> Events & Live Sessions (Zoom + Google Meet)</li>
+        <li><span class="ck">✅</span> Real-Time Chat (DMs + Group Threads)</li>
+        <li><span class="ck">✅</span> Gamification Engine</li>
+        <li><span class="ck">✅</span> Built-In Payments (0% platform fees)</li>
+        <li><span class="ck">✅</span> Email Broadcasts + Automations</li>
+        <li><span class="ck">✅</span> Zapier + Integrations</li>
+        <li><span class="ck">✅</span> All Future Updates — Forever</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="trust-strip">
+  <div class="trust-logos">
+    <span>🔒 256-bit SSL</span>
+    <span>💳 Stripe Secured</span>
+    <span>🛡️ 30-Day Guarantee</span>
+    <span>⭐ 5/5 Trustpilot</span>
+  </div>
+  <p>&copy; 2026 Daom Limited. All rights reserved.</p>
+</div>
+
+<script>
+/* ── Pricing config ── */
+const BASE_PRICE = 499;
+const BUMP_PRICE = 49;
+const COUPONS = {
+  'LIFETIME400': 400,
+  'SAVE300': 300,
+  'VIP200': 200
+};
+
+/* ── State ── */
+let bumpActive = false;
+let activeCoupon = null;   // string code or null
+let couponDiscount = 0;    // dollar amount
+
+/* ── DOM refs ── */
+const $totalPrice = document.getElementById('totalPrice');
+const $btnPrice = document.getElementById('btnPrice');
+const $regularPrice = document.getElementById('regularPriceDisplay');
+const $discountLine = document.getElementById('discountLine');
+const $discountLabel = document.getElementById('discountLabel');
+const $discountAmount = document.getElementById('discountAmount');
+const $bumpLine = document.getElementById('bumpSummaryLine');
+const $couponApplied = document.getElementById('couponApplied');
+const $couponExpanded = document.getElementById('couponExpanded');
+const $couponPillCode = document.getElementById('couponPillCode');
+const $couponInput = document.getElementById('couponInput');
+const $couponError = document.getElementById('couponError');
+const $couponErrorMsg = document.getElementById('couponErrorMsg');
+const $regularLine = document.getElementById('regularPriceLine');
+
+/* ── Recalculate total ── */
+function recalc() {
+  let total = BASE_PRICE - couponDiscount;
+  if (bumpActive) total += BUMP_PRICE;
+  $totalPrice.textContent = '$' + total;
+  $btnPrice.textContent = '$' + total;
+
+  /* Regular price line: show strikethrough only if coupon active */
+  if (activeCoupon) {
+    $regularPrice.textContent = '$' + BASE_PRICE;
+    $regularLine.classList.add('regular-line');
+    $discountLine.style.display = 'flex';
+    $discountLabel.textContent = '🏷️ ' + activeCoupon;
+    $discountAmount.textContent = '-$' + couponDiscount;
+  } else {
+    $regularPrice.textContent = '$' + BASE_PRICE;
+    $regularLine.classList.remove('regular-line');
+    $discountLine.style.display = 'none';
+  }
+
+  /* Bump line */
+  $bumpLine.style.display = bumpActive ? 'flex' : 'none';
+}
+
+/* ── Bump toggle ── */
+function toggleBump() {
+  bumpActive = !bumpActive;
+  const offer = document.getElementById('bumpOffer');
+  if (bumpActive) {
+    offer.classList.add('active');
+  } else {
+    offer.classList.remove('active');
+  }
+  recalc();
+}
+
+/* ── Coupon functions ── */
+function applyCoupon() {
+  const code = $couponInput.value.trim().toUpperCase();
+  $couponError.style.display = 'none';
+
+  if (!code) {
+    showError('Please enter a promo code');
+    return;
+  }
+
+  if (!COUPONS[code]) {
+    showError('Invalid promo code — please try again');
+    return;
+  }
+
+  /* Valid coupon */
+  activeCoupon = code;
+  couponDiscount = COUPONS[code];
+  $couponPillCode.textContent = code;
+  $couponApplied.style.display = 'flex';
+  $couponExpanded.style.display = 'none';
+  $couponInput.value = '';
+  recalc();
+}
+
+function removeCoupon() {
+  activeCoupon = null;
+  couponDiscount = 0;
+  $couponApplied.style.display = 'none';
+  $couponExpanded.style.display = 'block';
+  $couponInput.value = '';
+  $couponError.style.display = 'none';
+  recalc();
+}
+
+function showCouponInput() {
+  $couponApplied.style.display = 'none';
+  $couponExpanded.style.display = 'block';
+  $couponError.style.display = 'none';
+  $couponInput.value = '';
+  $couponInput.focus();
+}
+
+function showError(msg) {
+  $couponErrorMsg.textContent = msg;
+  $couponError.style.display = 'flex';
+}
+
+/* Auto-apply coupon from URL param or default LIFETIME400 */
+function initCoupon() {
+  const params = new URLSearchParams(window.location.search);
+  const urlCode = (params.get('coupon') || '').trim().toUpperCase();
+
+  let codeToApply = 'LIFETIME400'; // default
+  if (urlCode && COUPONS[urlCode]) {
+    codeToApply = urlCode;
+  }
+
+  activeCoupon = codeToApply;
+  couponDiscount = COUPONS[codeToApply];
+  $couponPillCode.textContent = codeToApply;
+  $couponApplied.style.display = 'flex';
+  $couponExpanded.style.display = 'none';
+  recalc();
+}
+
+/* ── Payment method switcher ── */
+function switchPayment(method) {
+  document.querySelectorAll('.payment-method').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`.payment-method[data-method="${method}"]`).classList.add('active');
+  document.querySelectorAll('.payment-fields').forEach(f => f.classList.remove('active'));
+  document.getElementById('fields-' + method).classList.add('active');
+}
+
+/* ── Submit ── */
+function handleSubmit() {
+  const btn = document.getElementById('submitBtn');
+  btn.style.background = 'linear-gradient(135deg, #1ABC9C, #059669)';
+  btn.innerHTML = '✅ Processing...';
+  btn.disabled = true;
+  setTimeout(() => { btn.innerHTML = '✅ Order Complete!'; }, 2000);
+}
+
+/* ── Card formatting ── */
+document.getElementById('card')?.addEventListener('input', function(e) {
+  let v = e.target.value.replace(/\D/g, '').substring(0, 16);
+  e.target.value = v.replace(/(.{4})/g, '$1 ').trim();
+});
+document.getElementById('expiry')?.addEventListener('input', function(e) {
+  let v = e.target.value.replace(/\D/g, '').substring(0, 4);
+  if (v.length >= 2) v = v.substring(0, 2) + ' / ' + v.substring(2);
+  e.target.value = v;
+});
+
+/* ── Init on load ── */
+initCoupon();
+</script>
+</body>
+</html>
